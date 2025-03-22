@@ -3,7 +3,7 @@ use crate::{
     parser::args::retrieve_args,
 };
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Format {
     TXT,
     MD

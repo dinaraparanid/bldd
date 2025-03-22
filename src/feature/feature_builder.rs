@@ -2,9 +2,9 @@ use crate::feature::{format::Format, out::Out, scan_path::ScanPath};
 
 #[derive(Clone, Debug, Default)]
 pub struct AppFeatures {
-    format: Format,
-    out: Out,
-    path: ScanPath,
+    pub format: Format,
+    pub out: Out,
+    pub path: ScanPath,
 }
 
 #[derive(Clone, Debug, Default)]

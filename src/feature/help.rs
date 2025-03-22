@@ -1,6 +1,6 @@
 use crate::feature::arg_feature::ArgFeature;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Help {}
 
 impl ArgFeature for Help {

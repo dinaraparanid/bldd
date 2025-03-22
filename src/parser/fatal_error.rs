@@ -7,8 +7,8 @@ impl <T, E> FatalError<T, E> for Result<T, E> {
         match self {
             Ok(value) => value,
             Err(e) => {
-                println!("{}", message(e));
-                std::process::exit(-1);
+                eprintln!("{}", message(e));
+                std::process::exit(1);
             },
         }
     }

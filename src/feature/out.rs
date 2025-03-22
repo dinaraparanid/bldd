@@ -5,7 +5,7 @@ use crate::{
     parser::{args::retrieve_args, dir::parse_dir},
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Out {
     Console,
     Directory { value: PathBuf }

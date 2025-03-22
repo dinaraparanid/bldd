@@ -5,9 +5,9 @@ use crate::{
     parser::dir::parse_dir,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ScanPath {
-    value: PathBuf,
+    pub value: PathBuf,
 }
 
 impl Default for ScanPath {
