@@ -5,20 +5,28 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::{feature::feature_builder::AppFeatures, parser::elf_arch::ElfArch};
 
-pub fn walk(features: &AppFeatures) -> HashMap<Option<ElfArch>, HashMap<String, Vec<DirEntry>>> {
+pub type Library = String;
+pub type ScanOutput = HashMap<Option<ElfArch>, Vec<(Library, Vec<DirEntry>)>>;
+
+pub fn walk(features: &AppFeatures) -> ScanOutput {
     WalkDir::new(&features.path.value)
         .into_iter()
         .map(|res| res.map(|e| get_entry_info(e))?)
         .filter_map(|x| x.ok())
         .flat_map(|(dir, arch, libs)| libs.into_iter().map(move |lib| (dir.clone(), arch, lib)))
-        .chunk_by(|(_, arch, _)| arch.clone())
+        .into_group_map_by(|(_, arch, _)| arch.clone())
         .into_iter()
         .map(|(arch, entries)| {
-            let libs_to_files: HashMap<String, Vec<DirEntry>> = entries
-                .map(|(elf, _, lib)| (elf, lib))
-                .chunk_by(|(_, lib)| lib.clone())
+            let libs_to_files = entries
                 .into_iter()
-                .map(|(lib, elfs)| (lib, elfs.map(|(elf, _)| elf).collect::<Vec<_>>()))
+                .map(|(elf, _, lib)| (elf, lib))
+                .into_group_map_by(|(_, lib)| lib.clone())
+                .into_iter()
+                .map(|(lib, elfs)| {
+                    (lib, elfs.into_iter().map(|(elf, _)| elf).collect::<Vec<_>>())
+                })
+                .sorted_by(|(_, elfs1), (_, elfs2)| elfs1.len().cmp(&elfs2.len()))
+                .rev()
                 .collect();
 
             (arch, libs_to_files)
@@ -27,7 +35,7 @@ pub fn walk(features: &AppFeatures) -> HashMap<Option<ElfArch>, HashMap<String, 
 }
 
 #[inline]
-fn get_entry_info(entry: DirEntry) -> Result<(DirEntry, Option<ElfArch>, Vec<String>), Box<dyn Error>> {
+fn get_entry_info(entry: DirEntry) -> Result<(DirEntry, Option<ElfArch>, Vec<Library>), Box<dyn Error>> {
     let arch = get_arch(&entry);
     let libs = get_libs(&entry)?;
     Ok((entry, arch, libs))
@@ -69,7 +77,7 @@ fn get_arch(entry: &DirEntry) -> Option<ElfArch> {
 }
 
 #[inline]
-fn get_libs(entry: &DirEntry) -> Result<Vec<String>, Box<dyn Error>> {
+fn get_libs(entry: &DirEntry) -> Result<Vec<Library>, Box<dyn Error>> {
     let libs_grep = Command::new("grep")
         .arg("NEEDED")
         .stdin(objdump_out(entry)?)
