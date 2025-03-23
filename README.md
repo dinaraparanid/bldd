@@ -2,7 +2,13 @@
 
 ### Download
 
-[x86-64 build](https://github.com/dinaraparanid/bldd/releases)
+[Release 0.1](https://github.com/dinaraparanid/bldd/releases/tag/0.1)
+
+### Build
+
+* Note: Rust compiler is requried
+
+> cargo build --release
 
 ### Features
 
