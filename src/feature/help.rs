@@ -10,14 +10,12 @@ impl ArgFeature for Help {
     }
 
     fn execute(_: Option<&str>) -> Self {
-        println!("
-        Usage: blld <options> /path/to/your/directory
+        println!("Usage: blld <options> /path/to/your/directory
 
-        Options:
-            -h --help               Display this information
-            -o --out[=/path/]       Output path (console if not specified)
-            -f --format[=txt;md]    Output format (.txt if not specified)
-        ");
+Options:
+    -h --help               Display this information
+    -o --out[=/path/]       Output path (console if not specified)
+    -f --format[=txt;md]    Output format (.txt if not specified)");
 
         Self {}
     }

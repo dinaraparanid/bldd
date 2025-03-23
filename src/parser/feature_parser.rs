@@ -2,6 +2,7 @@ use crate::{
     feature::{
         arg_feature::ArgFeature, feature_builder::{AppFeatureBuilder, AppFeatures},
         format::Format,
+        help::Help,
         out::Out,
         scan_path::ScanPath,
     },
@@ -18,6 +19,10 @@ pub fn parse_features(args: Vec<String>) -> Result<AppFeatures, ()> {
 }
 
 fn find_feature(arg: String, builder: AppFeatureBuilder) -> Result<AppFeatureBuilder, ()> {
+    if Help::is_applicable(&arg).unwrap() {
+        return Err(())
+    }
+
     if Format::is_applicable(&arg).get_or_exit(|arg| format!("Invalid format: {}", arg)) {
         return Ok(builder.set_format(Format::execute(Some(&arg))));
     }
